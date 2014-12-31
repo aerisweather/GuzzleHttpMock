@@ -12,7 +12,7 @@ A mock library for verifying requests made with the [Guzzle Http Client]([Guzzle
 You can install GuzzleHttpMock using composer:
 
 ```sh
-php composer.phar install aeris/guzzle-http-mock
+php composer.phar require --dev aeris/guzzle-http-mock
 ```
 
 
@@ -208,7 +208,7 @@ $httpMock
 
 ### Verifying Expectations
 
-Expectations may be verfied using the `\Aeris\GuzzleHttpMock\Mock::verify()` method.
+Expectations may be verfied using the `\Aeris\GuzzleHttpMock::verify()` method.
 
 ```php
 $httpMock
@@ -236,7 +236,7 @@ class MyUnitTest extends \PHPUnit_Framework_TestCase {
     	$this->guzzleClient = new \GuzzleHttp\Client([
 			'base_url' => 'http://www.example.com'
 		]);
-        $this->httpMock = new \Aeris\GuzzleHttpMock\Mock();
+        $this->httpMock = new \Aeris\GuzzleHttpMock();
         $this->httpMock->attachToClient($this->guzzleClient);
    	}
     
