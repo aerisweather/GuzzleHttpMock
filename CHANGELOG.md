@@ -16,5 +16,5 @@
 * ADD: Mock response methods:
     andResponseWith
     andResponseWithContent
-    andResponsdWithJson
+    andRespondWithJson
 * ADD: Documentation (README.md)
