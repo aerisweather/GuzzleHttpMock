@@ -1,0 +1,25 @@
+{
+  "name": "aeris/guzzle-http-mock",
+  "description": "A mock library for verifying requests made with the Guzzle Http Client, and mocking responses.",
+  "keywords": [
+    "testing",
+    "mocking",
+    "mock",
+    "guzzle",
+    "http",
+    "client"
+  ],
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Edan Schwartz",
+      "email": "edanschwartz@gmail.com"
+    },
+    {
+      "name": "Seth Miller",
+      "email": "seth@four43.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {}
+}
