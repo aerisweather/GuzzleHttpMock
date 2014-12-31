@@ -28,7 +28,7 @@
   "autoload": {
     "psr-4": {
       "Aeris\\GuzzleHttpMock\\": "src/",
-      "Aeris\\GuzzleHttpMockTest\\": "test/'"
+      "Aeris\\GuzzleHttpMockTest\\": "test/GuzzleHttpMockTest'"
     }
   }
 }
