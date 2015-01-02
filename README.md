@@ -1,6 +1,6 @@
 # GuzzleHttpMock
 
-A mock library for verifying requests made with the [Guzzle Http Client]([Guzzle](http://guzzle.readthedocs.org/), and mocking responses.
+A mock library for verifying requests made with the [Guzzle Http Client](http://guzzle.readthedocs.org/), and mocking responses.
 
 - - -
 
