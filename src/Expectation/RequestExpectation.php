@@ -52,7 +52,8 @@ class RequestExpectation {
 		RequestChecker::checkRequest($request, $this->expectedRequest);
 
 		if ($this->callCount >= $this->expectedCallCount) {
-			throw new InvalidRequestCountException($this->callCount, $this->expectedCallCount);
+			$actualAttemptedCallCount =  $this->callCount + 1;
+			throw new InvalidRequestCountException($actualAttemptedCallCount, $this->expectedCallCount);
 		}
 	}
 
