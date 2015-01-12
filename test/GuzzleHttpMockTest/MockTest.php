@@ -493,6 +493,24 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
+	public function verify_shouldNotComplainIfTheRequestIsMadeAsManyTimesAsExpected() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->times(3);
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo');
+		$this->guzzleClient
+			->get('http://www.example.com/foo');
+		$this->guzzleClient
+			->get('http://www.example.com/foo');
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
 	public function verify_shouldNotComplainIfTheRequestIsMadeOnce() {
 		$this->httpMock
 			->shouldReceiveRequest()
