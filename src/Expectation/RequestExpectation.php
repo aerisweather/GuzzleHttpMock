@@ -40,7 +40,7 @@ class RequestExpectation {
 	 * @return ResponseInterface
 	 */
 	public function makeRequest(RequestInterface $request) {
-		$this->validateRequest($request);
+		$this->validateRequestCanBeMade($request);
 
 		$this->callCount++;
 		$response = $this->getResponse();
@@ -48,7 +48,7 @@ class RequestExpectation {
 		return $response;
 	}
 
-	public function validateRequest(RequestInterface $request) {
+	protected function validateRequestCanBeMade(RequestInterface $request) {
 		RequestChecker::checkRequest($request, $this->expectedRequest);
 
 		if ($this->callCount >= $this->expectedCallCount) {
