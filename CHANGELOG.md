@@ -1,3 +1,9 @@
+# v1.0.1
+
+* FIX: Fix incorrect 'call count' exception message
+
+See git history for a pull list of changes
+
 # v1.0.0 (Initial Release)
 
 * ADD: Initial project setup
