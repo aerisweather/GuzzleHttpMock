@@ -1,8 +1,12 @@
+# v1.0.2
+
+* FIX: Was not properly comparison request bodies containing null data values.
+
 # v1.0.1
 
 * FIX: Fix incorrect 'call count' exception message
 
-See git history for a pull list of changes
+See git history for a full list of changes
 
 # v1.0.0 (Initial Release)
 
