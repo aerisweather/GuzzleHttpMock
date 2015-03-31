@@ -383,6 +383,70 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 		$this->httpMock->verify();
 	}
 
+	/** @test */
+	public function verify_shouldNotComplainIfTheActualRequestDoesMatchTheConfiguredRequest_body() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(['foo' => 'bar']);
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'bar']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
+	public function verify_shouldNotComplainIfTheActualRequestDoesMatchTheConfiguredRequest_body_outOfOrder() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams([
+				'faz' => 'baz',
+				'foo' => 'bar',
+			]);
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => [
+					'foo' => 'bar',
+					'faz' => 'baz',
+				]
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
+	public function verify_shouldNotComplainIfTheActualRequestDoesMatchTheConfiguredRequest_body_outOfOrder_nullValues() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams([
+				'faz'   => 'baz',
+				'foo'   => 'bar',
+				'nullA' => null,
+				'nullB' => null,
+			]);
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => [
+					'faz'   => 'baz',
+					'foo'   => 'bar',
+					'nullB' => null,
+					'nullA' => null,
+				]
+			]);
+
+		$this->httpMock->verify();
+	}
+
 	/**
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test

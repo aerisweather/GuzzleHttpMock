@@ -49,8 +49,8 @@ class RequestChecker {
 			}
 		}
 
-		asort($arrA);
-		asort($arrB);
+		ksort($arrA);
+		ksort($arrB);
 
 		self::checkIsEqual($arrA, $arrB, $fieldName);
 	}
