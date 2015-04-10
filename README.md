@@ -63,7 +63,7 @@ $httpMock->attachToClient($guzzleClient);
 
 // Setup a request expectation
 $httpMock
-	->shouldRecieveRequest()
+	->shouldReceiveRequest()
     ->withUrl('http://www.example.com/foo')
     ->withMethod('GET')
     ->withBodyParams([ 'foo' => 'bar' ])
@@ -231,7 +231,7 @@ $messageFactory = \GuzzleHttp\Message\MessageFactory();
 $response = $messageFactory->fromMessage($response);
 
 $httpMock
-	->shouldRecieveRequest()
+	->shouldReceiveRequest()
     ->withMethod('GET')
     ->withUrl('http://www.example.com/foo')
     ->andResponseWith($response);
@@ -328,7 +328,7 @@ You can also try wrapping the offending code in a `try...catch` block, to give t
 
 ```php
 $this->httpMock
-	->shouldRecieveRequest()
+	->shouldReceiveRequest()
     ->withXYZ()
     ->andRespondWith($aValidResponse);
 
