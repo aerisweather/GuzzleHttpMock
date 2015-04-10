@@ -67,7 +67,7 @@ $httpMock
     ->withUrl('http://www.example.com/foo')
     ->withMethod('GET')
     ->withBodyParams([ 'foo' => 'bar' ])
-    ->andResponseWithJson([ 'faz', 'baz' ], $statusCode = 200);
+    ->andRespondWithJson([ 'faz', 'baz' ], $statusCode = 200);
 
 // Make a matching request
 $response = $guzzleClient->get('/foo', ['foo' => 'bar']);
@@ -211,7 +211,7 @@ Method | Notes
 ------ | -----
 `andRespondWith($response:\GuzzleHttp\Message\ResponseInterface)` | See [Directly Setting a Mock Response](#directly-setting-a-mock-response)
 `andRespondWithContent($data:array, $statusCode:string)` | Sets the response body
-`andResponseWithJson($data:array, $statCode:String)` | Sets a JSON response body
+`andRespondWithJson($data:array, $statCode:String)` | Sets a JSON response body
 
 
 #### Directly Setting a Mock Response
