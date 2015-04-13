@@ -75,7 +75,7 @@ $response->json() == ['faz' => 'baz'];  // true
 $response->getStatusCode() == 200;      // true
 $httpMock->verify();                    // all good.
 
-// Make an unexpectd request
+// Make an unexpected request
 $guzzleClient->post('/bar', ['faz' => 'baz']);;
 $httpMock->verify();
 // UnexpectedHttpRequestException: Request does not match any expectation:
@@ -197,7 +197,7 @@ $httpMock
   ->shouldReceiveRequest()
   ->withMethod('GET')
   ->withUrl('http://www.example.com/foo')
-  ->andResponsdWithJson(['foo' => 'bar']);
+  ->andRespondWithJson(['foo' => 'bar']);
 
 $response = $guzzleClient->get('/foo');
 $response->json() == ['foo' => 'bar'];  // true
@@ -205,7 +205,7 @@ $response->json() == ['foo' => 'bar'];  // true
 
 #### Available Responses
 
-The following methods are avialable for mocking responses:
+The following methods are available for mocking responses:
 
 Method | Notes
 ------ | -----
@@ -239,7 +239,7 @@ $httpMock
 
 ### Verifying Expectations
 
-Expectations may be verfied using the `\Aeris\GuzzleHttpMock::verify()` method.
+Expectations may be verified using the `\Aeris\GuzzleHttpMock::verify()` method.
 
 ```php
 $httpMock
@@ -352,7 +352,7 @@ That's more verbosity than you may want in all of your tests, but it can be help
 
 #### Why's it doing that thing I don't think it should do?
 
-I don't know. That's really wierd. Bummer...
+I don't know. That's really weird. Bummer...
 
 Hey, why don't you open a new issue and tell us about it? Maybe we can help.
 
