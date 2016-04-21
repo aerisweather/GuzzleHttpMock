@@ -5,7 +5,7 @@ namespace Aeris\GuzzleHttpMock\Expectation;
 
 
 use Aeris\GuzzleHttpMock\Encoder;
-use Aeris\GuzzleHttpMock\Helper\RequestChecker;
+use Aeris\GuzzleHttpMock\Expect;
 use Aeris\GuzzleHttpMock\Exception\FailedRequestExpectationException;
 use Aeris\GuzzleHttpMock\Exception\InvalidRequestCountException;
 use GuzzleHttp\Message\MessageFactory;
@@ -18,18 +18,11 @@ use GuzzleHttp\Stream\StreamInterface;
 
 class RequestExpectation {
 
-	/** @var string */
-	protected $expectedUrl = RequestChecker::NONE;
-	/** @var string */
-	protected $expectedMethod = RequestChecker::NONE;
-	/** @var string[] */
-	protected $expectedQuery = [];
-	/** @var bool */
-	protected $expectedIsJson = RequestChecker::ANY;
-	/** @var StreamInterface */
-	protected $expectedBody = "";
 	/** @var int */
 	protected $expectedCallCount = 1;
+
+	/** @var callable[] */
+	protected $requestExpectations = [];
 
 	/** @var int */
 	protected $actualCallCount = 0;
@@ -39,6 +32,12 @@ class RequestExpectation {
 
 
 	public function __construct(RequestInterface $request) {
+		// Set default expectations
+		$this->requestExpectations['url'] = new Expect\MissingExpectation('url');					// required
+		$this->requestExpectations['method'] = new Expect\MissingExpectation('method');		// required
+		$this->requestExpectations['query'] = new Expect\RequestQueryEquals([]);
+		$this->requestExpectations['body'] = new Expect\RequestBodyEquals("");
+
 		$this->setExpectedRequest($request);
 		$this->mockResponse = $this->createResponse();
 	}
@@ -60,13 +59,9 @@ class RequestExpectation {
 
 	protected function validateRequestCanBeMade(RequestInterface $request) {
 		// Check request against expectations
-		RequestChecker::checkRequest($request, [
-			'url' => $this->expectedUrl,
-			'method' => $this->expectedMethod,
-			'query' => $this->expectedQuery,
-			'isJson' => $this->expectedIsJson,
-			'body' => $this->expectedBody
-		]);
+		foreach ($this->requestExpectations as $key => $expectation) {
+			$expectation($request);
+		}
 
 
 		if ($this->actualCallCount >= $this->expectedCallCount) {
@@ -88,19 +83,23 @@ class RequestExpectation {
 			$this->withBody($request->getBody());
 		}
 
-		if (RequestChecker::isJson($request)) {
+		if (self::isJson($request)) {
 			$this->withJsonContentType();
 		}
 	}
 
+	/**
+	 * @param string|callable $url
+	 * @return $this
+	 */
 	public function withUrl($url) {
-		$this->expectedUrl = $url;
+		$this->requestExpectations['url'] = new Expect\RequestUrlEquals($url);
 
 		return $this;
 	}
 
 	public function withMethod($method) {
-		$this->expectedMethod = $method;
+		$this->requestExpectations['method'] = new Expect\RequestMethodEquals($method);
 
 		return $this;
 	}
@@ -109,20 +108,28 @@ class RequestExpectation {
 		return $this->withQueryParams($query->toArray());
 	}
 
-	public function withQueryParams(array $params) {
-		$this->expectedQuery = $params;
+	/**
+	 * @param array|callable $params
+	 * @return $this
+	 */
+	public function withQueryParams($params) {
+		$this->requestExpectations['query'] = is_callable($params) ?
+			new Expect\Predicate(function(RequestInterface $request) use ($params) {
+				return $params($request->getQuery()->toArray());
+			}) :
+			new Expect\RequestQueryEquals($params);
 		
 		return $this;
 	}
 
 	public function withJsonContentType() {
-		$this->expectedIsJson = true;
+		$this->requestExpectations['isJson'] = new Expect\RequestIsJson();
 		
 		return $this;
 	}
 
 	public function withBody(StreamInterface $stream) {
-		$this->expectedBody = $stream;
+		$this->requestExpectations['body'] = new Expect\RequestBodyEquals($stream);
 
 		return $this;
 	}
@@ -198,5 +205,9 @@ class RequestExpectation {
 		if ($this->actualCallCount !== $this->expectedCallCount) {
 			throw new InvalidRequestCountException($this->actualCallCount, $this->expectedCallCount);
 		}
+	}
+
+	public static function isJson(RequestInterface $request) {
+		return !!preg_match('#^application/json#', $request->getHeader('Content-Type'));
 	}
 }

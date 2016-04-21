@@ -364,6 +364,27 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 		$this->httpMock->verify();
 	}
 
+	/** @test */
+	public function queryParams_passing_shouldUseCustomLogic() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withQueryParams(function($actualParams) {
+				return $actualParams['foo'] === 'bar';
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'query' => [
+					'foo' => 'bar',
+					'faz' => 'shazaam'
+				]
+			]);
+
+		$this->httpMock->verify();
+	}
+
 	/**
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
