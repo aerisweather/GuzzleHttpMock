@@ -18,19 +18,29 @@ use GuzzleHttp\Stream\StreamInterface;
 
 class RequestExpectation {
 
-	/** @var RequestInterface */
-	protected $expectedRequest;
-
-	/** @var ResponseInterface */
-	protected $response;
-
-	protected $callCount = 0;
-
+	/** @var string */
+	protected $expectedUrl = RequestChecker::NONE;
+	/** @var string */
+	protected $expectedMethod = RequestChecker::NONE;
+	/** @var string[] */
+	protected $expectedQuery = [];
+	/** @var bool */
+	protected $expectedIsJson = RequestChecker::ANY;
+	/** @var StreamInterface */
+	protected $expectedBody = "";
+	/** @var int */
 	protected $expectedCallCount = 1;
 
-	public function __construct(RequestInterface &$request) {
+	/** @var int */
+	protected $actualCallCount = 0;
+
+	/** @var ResponseInterface */
+	protected $mockResponse;
+
+
+	public function __construct(RequestInterface $request) {
 		$this->setExpectedRequest($request);
-		$this->setResponse($this->createResponse());
+		$this->mockResponse = $this->createResponse();
 	}
 
 
@@ -42,64 +52,77 @@ class RequestExpectation {
 	public function makeRequest(RequestInterface $request) {
 		$this->validateRequestCanBeMade($request);
 
-		$this->callCount++;
-		$response = $this->getResponse();
+		$this->actualCallCount++;
+		$response = $this->mockResponse;
 
 		return $response;
 	}
 
 	protected function validateRequestCanBeMade(RequestInterface $request) {
-		RequestChecker::checkRequest($request, $this->expectedRequest);
+		// Check request against expectations
+		RequestChecker::checkRequest($request, [
+			'url' => $this->expectedUrl,
+			'method' => $this->expectedMethod,
+			'query' => $this->expectedQuery,
+			'isJson' => $this->expectedIsJson,
+			'body' => $this->expectedBody
+		]);
 
-		if ($this->callCount >= $this->expectedCallCount) {
-			$actualAttemptedCallCount =  $this->callCount + 1;
+
+		if ($this->actualCallCount >= $this->expectedCallCount) {
+			$actualAttemptedCallCount =  $this->actualCallCount + 1;
 			throw new InvalidRequestCountException($actualAttemptedCallCount, $this->expectedCallCount);
 		}
-	}
-
-	/**
-	 * @return RequestInterface
-	 */
-	public function getExpectedRequest() {
-		return $this->expectedRequest;
 	}
 
 	/**
 	 * @param RequestInterface $request
 	 */
 	public function setExpectedRequest($request) {
-		$this->expectedRequest = $request;
+		$this
+			->withUrl($request->getUrl())
+			->withMethod($request->getMethod())
+			->withQuery($request->getQuery());
+
+		if ($request->getBody() !== null) {
+			$this->withBody($request->getBody());
+		}
+
+		if (RequestChecker::isJson($request)) {
+			$this->withJsonContentType();
+		}
 	}
 
 	public function withUrl($url) {
-		$this->expectedRequest->setUrl($url);
+		$this->expectedUrl = $url;
 
 		return $this;
 	}
 
 	public function withMethod($method) {
-		$this->expectedRequest->setMethod($method);
+		$this->expectedMethod = $method;
 
 		return $this;
 	}
 
 	public function withQuery(Query $query) {
-		$this->expectedRequest->setQuery($query);
-
-		return $this;
+		return $this->withQueryParams($query->toArray());
 	}
 
 	public function withQueryParams(array $params) {
-		return $this->withQuery(new Query($params));
+		$this->expectedQuery = $params;
+		
+		return $this;
 	}
 
 	public function withJsonContentType() {
-		$this->expectedRequest->addHeader('Content-Type', 'application/json');
+		$this->expectedIsJson = true;
+		
 		return $this;
 	}
 
 	public function withBody(StreamInterface $stream) {
-		$this->expectedRequest->setBody($stream);
+		$this->expectedBody = $stream;
 
 		return $this;
 	}
@@ -130,22 +153,8 @@ class RequestExpectation {
 		return $this;
 	}
 
-	/**
-	 * @return ResponseInterface
-	 */
-	public function getResponse() {
-		return $this->response;
-	}
-
-	/**
-	 * @param ResponseInterface $response
-	 */
-	public function setResponse(ResponseInterface $response) {
-		$this->response = $response;
-	}
-
 	public function andRespondWith(ResponseInterface $response) {
-		$this->setResponse($response);
+		$this->mockResponse = $response;
 
 		return $this;
 	}
@@ -157,7 +166,7 @@ class RequestExpectation {
 
 		$stream = $this->createStream($data, $encoder);
 
-		$this->response->setBody($stream);
+		$this->mockResponse->setBody($stream);
 
 		return $this;
 	}
@@ -167,7 +176,7 @@ class RequestExpectation {
 	}
 
 	public function andRespondWithCode($code) {
-		$this->response->setStatusCode($code);
+		$this->mockResponse->setStatusCode($code);
 
 		return $this;
 	}
@@ -186,8 +195,8 @@ class RequestExpectation {
 	}
 
 	public function verify() {
-		if ($this->callCount !== $this->expectedCallCount) {
-			throw new InvalidRequestCountException($this->callCount, $this->expectedCallCount);
+		if ($this->actualCallCount !== $this->expectedCallCount) {
+			throw new InvalidRequestCountException($this->actualCallCount, $this->expectedCallCount);
 		}
 	}
 }
