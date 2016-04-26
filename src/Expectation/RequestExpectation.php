@@ -16,7 +16,6 @@ use GuzzleHttp\Message\RequestInterface;
 use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Post\PostBody;
 use GuzzleHttp\Query;
-use GuzzleHttp\Stream\NullStream;
 use GuzzleHttp\Stream\Stream;
 use GuzzleHttp\Stream\StreamInterface;
 
@@ -216,6 +215,12 @@ class RequestExpectation {
 		return $this;
 	}
 
+	public function zeroOrMoreTimes() {
+		$this->expectedCallCount = INF;
+		
+		return $this;
+	}
+
 	public function andRespondWith(ResponseInterface $response) {
 		$this->mockResponse = $response;
 
@@ -258,6 +263,10 @@ class RequestExpectation {
 	}
 
 	public function verify() {
+		if ($this->expectedCallCount === INF) {
+			return;
+		}
+		
 		if ($this->actualCallCount !== $this->expectedCallCount) {
 			throw new InvalidRequestCountException($this->actualCallCount, $this->expectedCallCount);
 		}
