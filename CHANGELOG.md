@@ -1,3 +1,9 @@
+# v1.1.0
+
+* ADD: Accept custom callables for all expectations
+* ADD: Add custom expectation callables: `Any`, `ArrayContains`, `ArrayEquals`, `Equals`, `Matches`
+* MOD: Refactor `RequestExpectation` to use callables for all request validations
+
 # v1.0.2
 
 * FIX: Was not properly comparison request bodies containing null data values.
