@@ -6,6 +6,7 @@ namespace Aeris\GuzzleHttpMock\Expectation;
 
 use Aeris\GuzzleHttpMock\Encoder;
 use Aeris\GuzzleHttpMock\Exception\CompoundUnexpectedHttpRequestException;
+use Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException;
 use Aeris\GuzzleHttpMock\Expect;
 use Aeris\GuzzleHttpMock\Exception\FailedRequestExpectationException;
 use Aeris\GuzzleHttpMock\Exception\InvalidRequestCountException;
@@ -62,7 +63,7 @@ class RequestExpectation {
 			try {
 				$expectation($request);
 			}
-			catch (\Exception $err) {
+			catch (UnexpectedHttpRequestException $err) {
 				return array_merge($errors, [$err]);
 			}
 			return $errors;
