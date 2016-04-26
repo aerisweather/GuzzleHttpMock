@@ -135,7 +135,7 @@ class RequestExpectation {
 	 */
 	public function withContentType($contentType) {
 		$this->requestExpectations['contentType'] = new Expect\Predicate(function(RequestInterface $request) use ($contentType) {
-			$expectation = is_callable($contentType) ? $contentType : new Expect\Match("#$contentType#", 'content type');
+			$expectation = is_callable($contentType) ? $contentType : new Expect\Matches("#$contentType#", 'content type');
 			
 			return $expectation($request->getHeader('Content-Type'));
 		}, 'content type expectation failed');

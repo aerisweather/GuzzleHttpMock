@@ -6,7 +6,7 @@ namespace Aeris\GuzzleHttpMock\Expect;
 
 use Aeris\GuzzleHttpMock\Exception\FailedRequestExpectationException;
 
-class Match {
+class Matches {
 	
 	/** @var string (RegExp) */
 	protected $expectedValue;
