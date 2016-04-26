@@ -1,3 +1,7 @@
+# v1.1.2
+
+* FIX: minor error handling fix
+
 # v1.1.1
 
 * FIX: Throw CompoundException on request with multiple failures
