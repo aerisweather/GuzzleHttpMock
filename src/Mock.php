@@ -107,11 +107,11 @@ class Mock implements SubscriberInterface {
 		);
 
 		if (is_null($state['response'])) {
-			$error = count($state['errors']) ?
-				new CompoundUnexpectedHttpRequestException($state['errors']) :
-				new UnexpectedHttpRequestException("No mock exists for request to {$request->getUrl()}");
+			$msg = array_reduce($state['errors'], function($msg, \Exception $err) {
+				return $msg . PHP_EOL . $err->getMessage();
+			}, "No mock matches request `{$request->getMethod()} {$request->getUrl()}`:");
 
-			throw $error;
+			throw new UnexpectedHttpRequestException($msg);
 		}
 
 		return $state['response'];
