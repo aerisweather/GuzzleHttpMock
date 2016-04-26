@@ -5,6 +5,7 @@ namespace Aeris\GuzzleHttpMock\Expectation;
 
 
 use Aeris\GuzzleHttpMock\Encoder;
+use Aeris\GuzzleHttpMock\Exception\CompoundUnexpectedHttpRequestException;
 use Aeris\GuzzleHttpMock\Expect;
 use Aeris\GuzzleHttpMock\Exception\FailedRequestExpectationException;
 use Aeris\GuzzleHttpMock\Exception\InvalidRequestCountException;
@@ -57,10 +58,19 @@ class RequestExpectation {
 
 	protected function validateRequestCanBeMade(RequestInterface $request) {
 		// Check request against expectations
-		foreach ($this->requestExpectations as $key => $expectation) {
-			$expectation($request);
-		}
+		$errors = array_reduce($this->requestExpectations, function($errors, $expectation) use ($request) {
+			try {
+				$expectation($request);
+			}
+			catch (\Exception $err) {
+				return array_merge($errors, [$err]);
+			}
+			return $errors;
+		}, []);
 
+		if (count($errors)) {
+			throw new CompoundUnexpectedHttpRequestException($errors);
+		}
 
 		if ($this->actualCallCount >= $this->expectedCallCount) {
 			$actualAttemptedCallCount =  $this->actualCallCount + 1;
