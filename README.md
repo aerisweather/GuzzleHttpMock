@@ -207,11 +207,11 @@ use Aeris\GuzzleHttpMock\Expect;
 $httpMock
 	->shouldReceiveRequest()
 	// Check URL against a regex
-	->withUrl(Expect\Matches('/^https:/'))
+	->withUrl(new Expect\Matches('/^https:/'))
 	// Check query params against an array
-	->withQueryParams(Expect\ArrayEquals(['foo' => 'bar']))
+	->withQueryParams(new Expect\ArrayEquals(['foo' => 'bar']))
 	// Allow any body params
-	->withBodyParams(Expect\Any());
+	->withBodyParams(new Expect\Any());
 ```
 
 ### Mocking Responses
