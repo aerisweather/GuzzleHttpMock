@@ -183,7 +183,9 @@ class RequestExpectation {
 		return $this;
 	}
 
-	private static function parseRequestBody(StreamInterface $body) {
+	private static function parseRequestBody($body) {
+		if (!$body) { return []; }
+		
 		if ($body instanceof PostBody) {
 			return $body->getFields();
 		}
