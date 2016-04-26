@@ -1,3 +1,7 @@
+# v1.1.1
+
+* FIX: Throw CompoundException on request with multiple failures
+
 # v1.1.0
 
 * ADD: Accept custom callables for all expectations
