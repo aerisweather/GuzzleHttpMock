@@ -15,17 +15,14 @@ A mock library for verifying requests made with the [Guzzle Http Client](http://
 * [Usage](#usage)
   * [Attaching to a Guzzle Client](#attaching-to-a-guzzle-client)
   * [Creating Request Expectations](#creating-request-expectations)
-    * [Available Expectations](#available-expectations)
-    * [Default Expectations](#default-expectations)
-    * [Directly Setting an Expected Request](#directly-setting-an-expected-request)
+		* [Available Expectations](#available-expectations)
+		* [Default Expectations](#default-expectations)
+		* [Directly Setting an Expected Request](#directly-setting-an-expected-request)
+		* [Custom Expectations](#custom-expectations)
   * [Mocking Responses](#mocking-responses)
-    * [Available Responses](#available-responses)
-    * [Directly Setting a Mock Response](#directly-setting-a-mock-response)
   * [Verifying Expectations](#verifying-expectations)
-    * [With PHPUnit](#with-phpunit)
   * [Gotchyas](#gotchyas)
     * [Unspecified expectations](#unspecified-expectations)
-    * [Flexible Expectations](#flexible-expectations)
     * [Where's my UnexpectedRequestException?](#wheres-my-unexpectedrequestexception)
     * [Why's it doing that thing I don't think it should do?](#whys-it-doing-that-thing-i-dont-think-it-should-do)
   * [Contributing](#contributing)
@@ -141,6 +138,7 @@ Method | Notes
 `withMethod($url:string)` | Http method.
 `withQuery($query:\GuzzleHttp\Query)` |
 `withQueryParams($params:array)` |
+`withContentType($contentType:string)` |
 `withJsonContentType()` |
 `withBody($stream:StreamInterface)` |
 `withBodyParams($params:array)` |
@@ -187,6 +185,34 @@ $expectedRequest = $guzzleClient->createRequest([
 $httpClient->shouldReceiveRequest($expectedRequest);
 ```
 
+#### Custom Expectations
+
+All expectation methods accept either a value or a `callable` as a parameter. By passing a callable, you can create custom expectations. For example:
+
+```php
+$httpMock
+	->shouldReceiveRequest()
+	->withBodyParams(function($actualParams) {
+	  return $actualParams['foo'] === 'bar';
+	});
+```
+
+In this case, the expectation will fail if the actual request body has a `foo` params which does not equal `bar`.
+
+GuzzleHttpMock provides some built-in custom expectations, as well. For example:
+
+```php
+use Aeris\GuzzleHttpMock\Expect;
+
+$httpMock
+	->shouldReceiveRequest()
+	// Check URL against a regex
+	->withUrl(Expect\Match('/^https:/'))
+	// Check query params against an array
+	->withQueryParams(Expect\ArrayEquals(['foo' => 'bar']))
+	// Allow any body params
+	->withBodyParams(Expect\Any());
+```
 
 ### Mocking Responses
 
@@ -245,7 +271,7 @@ Expectations may be verified using the `\Aeris\GuzzleHttpMock::verify()` method.
 $httpMock
   ->shouldReceiveRequest()
   ->withUrl('http://www.example.com/foo');
-  
+
 $guzzleClient->get('/bar');
 
 $httpMock->verify();
@@ -261,7 +287,7 @@ When using GuzzleHttpMock with PHPUnit, make sure to add `Mock::verify()` to you
 class MyUnitTest extends \PHPUnit_Framework_TestCase {
     private $guzzleClient;
     private $httpMock;
-    
+
     public function setUp() {
     	// Setup your guzzle client and mock
     	$this->guzzleClient = new \GuzzleHttp\Client([
@@ -270,7 +296,7 @@ class MyUnitTest extends \PHPUnit_Framework_TestCase {
         $this->httpMock = new \Aeris\GuzzleHttpMock();
         $this->httpMock->attachToClient($this->guzzleClient);
    	}
-    
+
     public function tearDown() {
     	// Make sure all request expectations are met.
     	$this->httpMock->verify();
@@ -307,9 +333,6 @@ You might argue that it would make more sense for the RequestExpectation to acce
 
 
 
-#### Flexible Expectations
-
-Some mocking libraries allow you to specify flexible expectations (eg `withQueryParams(Matchers\Subset(['foo' => 'bar']))`. GuzzleHttpMock is not (yet) one of them.
 
 
 #### Where's my UnexpectedRequestException?
