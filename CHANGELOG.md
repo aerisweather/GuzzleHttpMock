@@ -1,3 +1,9 @@
+# v1.1.3
+
+* ADD: `zeroOrMoreTimes` expectation
+* MOD: Improve error messages on no matching request expectation
+* FIX: Check for null response body, before attempting to parse
+
 # v1.1.2
 
 * FIX: minor error handling fix
