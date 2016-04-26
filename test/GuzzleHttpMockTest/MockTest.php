@@ -317,7 +317,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_url_notMatch_shouldFail() {
+	public function url_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -333,7 +333,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_method_notMatch_shouldFail() {
+	public function method_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('POST')
@@ -349,7 +349,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_query_notMatch_shouldFail() {
+	public function query_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -368,7 +368,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_body_notMatch_shouldFail() {
+	public function body_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -384,7 +384,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_body_match_shouldPass() {
+	public function body_match_shouldPass() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -400,7 +400,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_body_outOfOrder_match_shouldPass() {
+	public function body_outOfOrder_match_shouldPass() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -422,7 +422,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_body_outOfOrder_nullValues_match_shouldPass() {
+	public function body_outOfOrder_nullValues_match_shouldPass() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -451,7 +451,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_jsonBody_notMatch_shouldFail() {
+	public function jsonBody_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -471,7 +471,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function verify_shouldFailIfNoRequestIsConfigured() {
+	public function shouldFailIfNoRequestIsConfigured() {
 		$this->guzzleClient
 			->get('http://www.example.com/shazlooey', [
 				'body' => ['not' => 'what I expected']
@@ -484,7 +484,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 */
-	public function verify_shouldFailIfTheRequestIsNotMade() {
+	public function shouldFailIfTheRequestIsNotMade() {
 		$this->httpMock
 			->shouldReceiveRequest();
 
@@ -501,7 +501,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 */
-	public function verify_shouldFailIfTheRequestIsMadeMoreThanOnce() {
+	public function shouldFailIfTheRequestIsMadeMoreThanOnce() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -520,7 +520,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 */
-	public function verify_shouldFailIfTheRequestIsMadeMoreThanTheSetTimes() {
+	public function shouldFailIfTheRequestIsMadeMoreThanTheSetTimes() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -541,7 +541,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	 * @test
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 */
-	public function verify_shouldFailIfTheRequestIsMadeLessThanTheSetTimes() {
+	public function shouldFailIfTheRequestIsMadeLessThanTheSetTimes() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -557,7 +557,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_shouldPassIfTheRequestIsMadeAsManyTimesAsExpected() {
+	public function shouldPassIfTheRequestIsMadeAsManyTimesAsExpected() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -575,7 +575,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_shouldPassIfTheRequestIsMadeOnce() {
+	public function shouldPassIfTheRequestIsMadeOnce() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -588,7 +588,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function verify_shouldPassIfTheRequestIsMadeTheNumberOfSetTimes() {
+	public function shouldPassIfTheRequestIsMadeTheNumberOfSetTimes() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
