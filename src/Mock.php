@@ -33,10 +33,6 @@ class Mock implements SubscriberInterface {
 	}
 
 	public function shouldReceiveRequest(RequestInterface &$request = null) {
-		if (is_null($request)) {
-			$request = new Request('GET', '/');
-		}
-
 		$expectation = new Expectation\RequestExpectation($request);
 		$this->requestExpectations[] = $expectation;
 

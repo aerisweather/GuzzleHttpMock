@@ -10,6 +10,7 @@ use GuzzleHttp\Message\Response;
 use GuzzleHttp\Message\ResponseInterface;
 use GuzzleHttp\Stream\Stream;
 use Aeris\GuzzleHttpMock\Mock as GuzzleHttpMock;
+use Aeris\GuzzleHttpMock\Expect;
 
 class MockTest extends \PHPUnit_Framework_TestCase {
 
@@ -329,6 +330,39 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 		$this->httpMock->verify();
 	}
 
+	/** @test */
+	public function url_customLogic_match_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl(function($url) {
+				return preg_match('/foo$/', $url) === 1;
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo');
+
+		$this->httpMock->verify();
+	}
+
+	/**
+	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
+	 * @test
+	 */
+	public function url_customLogic_notMatch_shouldFail() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl(function ($url) {
+				return preg_match('/foo$/', $url) === 1;
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/shablooey');
+
+		$this->httpMock->verify();
+	}
+
 	/**
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
@@ -340,7 +374,40 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 			->withUrl('http://www.example.com/foo');
 
 		$this->guzzleClient
-			->get('http://www.example.com/shazlooey');
+			->get('http://www.example.com/foo');
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
+	public function method_match_customLogic_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod(function($method) {
+				return strlen($method) === 3;
+			})
+			->withUrl('http://www.example.com/foo');
+
+		$this->guzzleClient
+			->put('http://www.example.com/foo');
+
+		$this->httpMock->verify();
+	}
+
+	/**
+	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
+	 * @test
+	 */
+	public function method_notMatch_customLogic_shouldFail() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod(function ($method) {
+				return strlen($method) === 3;
+			})
+			->withUrl('http://www.example.com/foo');
+
+		$this->guzzleClient
+			->post('http://www.example.com/foo');
 
 		$this->httpMock->verify();
 	}
@@ -364,11 +431,57 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 		$this->httpMock->verify();
 	}
 
+	/** @test */
+	public function queryParams_customLogic_match_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withQueryParams(function($actualParams) {
+				return $actualParams['foo'] === 'bar';
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'query' => [
+					'foo' => 'bar',
+					'faz' => 'shazaam'
+				]
+			]);
+
+		$this->httpMock->verify();
+	}
+
 	/**
 	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
 	 * @test
 	 */
-	public function body_notMatch_shouldFail() {
+	public function queryParams_customLogic_notMatch_shouldFail() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withQueryParams(function ($actualParams) {
+ 				return $actualParams['foo'] === 'notTheActualValueOfFoo';
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'query' => [
+					'foo' => 'bar',
+					'faz' => 'shazaam'
+				]
+			]);
+
+		
+		$this->httpMock->verify();
+	}
+
+	/**
+	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
+	 * @test
+	 */
+	public function bodyParams_notMatch_shouldFail() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -384,7 +497,7 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	/** @test */
-	public function body_match_shouldPass() {
+	public function bodyParams_match_shouldPass() {
 		$this->httpMock
 			->shouldReceiveRequest()
 			->withMethod('GET')
@@ -394,6 +507,95 @@ class MockTest extends \PHPUnit_Framework_TestCase {
 		$this->guzzleClient
 			->get('http://www.example.com/foo', [
 				'body' => ['foo' => 'bar']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
+	public function body_customLogic_match_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(function($bodyParams) {
+				return $bodyParams['foo'] === 'bar';
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'bar']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/**
+	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException 
+	 * @test 
+	 */
+	public function body_customLogic_notMatch_shouldFail() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(function ($bodyParams) {
+				return $bodyParams['foo'] === 'bar';
+			});
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'shablooey']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	public function body_anyParams_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(new Expect\Any());
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'bar']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/** @test */
+	public function body_arrayContains_match_shouldPass() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(new Expect\ArrayContains(['foo' => 'bar']));
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'bar', 'faz' => 'baz']
+			]);
+
+		$this->httpMock->verify();
+	}
+
+	/**
+	 * @expectedException \Aeris\GuzzleHttpMock\Exception\UnexpectedHttpRequestException
+	 * @test
+	 */
+	public function body_arrayContains_notMatch_shouldFail() {
+		$this->httpMock
+			->shouldReceiveRequest()
+			->withMethod('GET')
+			->withUrl('http://www.example.com/foo')
+			->withBodyParams(new Expect\ArrayContains(['foo' => 'bar']));
+
+		$this->guzzleClient
+			->get('http://www.example.com/foo', [
+				'body' => ['foo' => 'shablooey', 'faz' => 'baz']
 			]);
 
 		$this->httpMock->verify();
