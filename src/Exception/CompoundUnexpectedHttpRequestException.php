@@ -10,13 +10,11 @@ class CompoundUnexpectedHttpRequestException extends UnexpectedHttpRequestExcept
 	 * @param UnexpectedHttpRequestException[] $errors
 	 */
 	public function __construct(array $errors) {
-		$message = array_reduce($errors, function ($msg, UnexpectedHttpRequestException $err) {
-			$msg .= '; ' . $err->getMessage();
+		$messages = array_reduce($errors, function ($messages, UnexpectedHttpRequestException $err) {
+			return array_merge($messages, [$err->getMessage()]);
+		}, []);
 
-			return $msg;
-		}, 'Request does not match any expectation: ');
-
-		parent::__construct($message);
+		parent::__construct(join('; ', $messages));
 	}
 
 }
