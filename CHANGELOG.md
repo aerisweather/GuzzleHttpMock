@@ -1,3 +1,7 @@
+# v1.1.4
+
+* MOD: Add Nick Shipes as a maintainer
+
 # v1.1.3
 
 * ADD: `zeroOrMoreTimes` expectation
