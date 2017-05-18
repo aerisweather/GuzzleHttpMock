@@ -1,3 +1,7 @@
+# v1.1.5
+
+* MOD: Add `role: Maintainer` to composer.json 
+
 # v1.1.4
 
 * MOD: Add Nick Shipes as a maintainer
