@@ -14,15 +14,18 @@
   "authors": [
     {
       "name": "Edan Schwartz",
-      "email": "edanschwartz@gmail.com"
+      "email": "edanschwartz@gmail.com",
+      "role": "Maintainer"
     },
     {
       "name": "Seth Miller",
-      "email": "seth@four43.com"
+      "email": "seth@four43.com",
+      "role": "Maintainer"
     },
     {
        "name": "Nick Shipes",
-       "email": "nshipes@aerisweather.com"
+       "email": "nshipes@aerisweather.com",
+       "role": "Maintainer"
     }
   ],
   "minimum-stability": "dev",
